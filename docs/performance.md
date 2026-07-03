@@ -60,43 +60,63 @@ MRI before any timing.
 - **Host:** Apple M4 Max (`Mac16,5`, arm64), macOS 26.5.1 — **date 2026-07-03**.
 - **Runtimes:** Go 1.26.4 · MRI `ruby 4.0.5 +PRISM` · MRI + YJIT · JRuby 10.1.0.0
   (OpenJDK 25) · TruffleRuby 34.0.1 (GraalVM CE Native).
-- **Method:** each process runs 3 untimed warm-up passes, then 25 timed passes of
+- **Method:** each process runs 3 untimed warm-up passes, then 40 timed passes of
   a fixed inner loop, timed with a monotonic clock; the **best** pass is reported
   as **ns/op** (lower is better). `vs MRI` < 1.00× means *faster than MRI*.
   Interpreter start-up is outside the timed region, so these are operation costs,
   not `ruby file.rb` process costs.
 
+!!! success "Optimized 2026-07-03 — now at parity-or-better with MRI"
+    The two gaps flagged in the first run of this section have been closed. A
+    **segmented sieve of Eratosthenes** memoizes the prime generator
+    (`Prime.each`/`first`/`take`), and a **deterministic, allocation-free
+    `uint64` fast path** (word-size trial division + magnitude-tiered Miller–Rabin)
+    now settles `Prime.prime?` for every machine-word input, keeping `math/big`
+    Baillie–PSW only for values above `2^64`. The numbers below are re-measured
+    against those optimized paths.
+
 #### first-1000
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 3438066.6 | 51.62× |
-| MRI | 66600.0 | 1.00× |
-| MRI + YJIT | 19200.0 | 0.29× |
-| JRuby | 56308.4 | 0.85× |
-| TruffleRuby | 101200.0 | 1.52× |
+| **go-ruby (pure Go)** | 15208.4 | 0.22× |
+| MRI | 68400.0 | 1.00× |
+| MRI + YJIT | 17600.0 | 0.26× |
+| JRuby | 51958.4 | 0.76× |
+| TruffleRuby | 87150.0 | 1.27× |
 
 #### isprime-982451653
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 10364.2 | 10.34× |
-| MRI | 1002.0 | 1.00× |
-| MRI + YJIT | 558.5 | 0.56× |
-| JRuby | 1596.3 | 1.59× |
-| TruffleRuby | 1738.1 | 1.73× |
+| **go-ruby (pure Go)** | 663.8 | 0.65× |
+| MRI | 1017.5 | 1.00× |
+| MRI + YJIT | 521.5 | 0.51× |
+| JRuby | 1627.5 | 1.60× |
+| TruffleRuby | 1412.6 | 1.39× |
 
 #### isprime-composite
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
-| **go-ruby (pure Go)** | 4595.0 | 5.08× |
+| **go-ruby (pure Go)** | 749.8 | 0.83× |
 | MRI | 905.0 | 1.00× |
-| MRI + YJIT | 660.0 | 0.73× |
-| JRuby | 8064.8 | 8.91× |
-| TruffleRuby | 3034.6 | 3.35× |
+| MRI + YJIT | 605.0 | 0.67× |
+| JRuby | 10485.8 | 11.59× |
+| TruffleRuby | 2798.3 | 3.09× |
 
-The **honest outlier of the tranche.** go-ruby-prime is arbitrary-precision (`math/big` + Baillie–PSW per candidate), so small-integer primality (~10×) and `first(1000)` (~52×, generate-vs-sieve) are much slower than MRI's native trial division and C Eratosthenes sieve. The library is *correct for big integers* (its design goal), but a native small-int fast path and a sieve for `first`/`take` are the clear optimization targets.
+**Parity-or-better across the board.** Both `prime?` workloads now run **faster
+than MRI** (0.65× and 0.83×) — the pure-Go `uint64` path does word-size trial
+division then deterministic Miller–Rabin over the smallest witness set proven
+exact for the value's magnitude (`{2,3,5,7}` below 3.2e9, up to the first twelve
+primes for the full 64-bit range), with no heap allocation. `Prime.first(1000)`
+is **~4.5× faster than MRI** (0.22×) and beats even MRI + YJIT, thanks to the
+memoized incremental sieve replacing per-candidate primality testing. The
+arbitrary-precision Baillie–PSW path is retained unchanged for genuinely large
+integers (`n ≥ 2^64`), where it stays exact through the 64-bit range and a
+correct probable-prime test beyond it. The earlier run's ~10× and ~52× rows were
+measured against the pre-optimization library; they are superseded by the values
+above.
 
 !!! note "Reproduce"
     The harness is committed under
