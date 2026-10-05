@@ -4,3 +4,5 @@ github.com/go-ruby-prime/prime v0.0.0-20260717072153-520610c103fc h1:n6D8+mmjw0d
 github.com/go-ruby-prime/prime v0.0.0-20260717072153-520610c103fc/go.mod h1:dG/91hk8HlQ6YAdD64xiMFHTTmXjTWtapKWoG9JtcRA=
 github.com/go-ruby-prime/prime v0.0.0-20260916100658-bce9183a6c57 h1:0REvk8nHvMGXavBnIoGfj5L/Fj55Dg/FCrMi57GgZPo=
 github.com/go-ruby-prime/prime v0.0.0-20260916100658-bce9183a6c57/go.mod h1:dG/91hk8HlQ6YAdD64xiMFHTTmXjTWtapKWoG9JtcRA=
+github.com/go-ruby-prime/prime v0.0.0-20261005011615-d62e196814d3 h1:eX020mm6nAAipI4cWDboCcIcZp/cONNDy+5OMmij5g0=
+github.com/go-ruby-prime/prime v0.0.0-20261005011615-d62e196814d3/go.mod h1:IPOtU2lbKoIGVRhkZKwY75ag0jNVdsqTqXUJ5v9LuKs=
