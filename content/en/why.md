@@ -1,4 +1,9 @@
-# Why pure Go
+---
+title: "Why pure Go"
+weight: 20
+---
+
+# Why pure Go {#why-pure-go}
 
 `go-ruby-prime/prime` reimplements Ruby's `Prime` in **pure Go, with cgo disabled**. The
 slice of Ruby it covers is **deterministic and interpreter-independent**: sieving
@@ -7,7 +12,7 @@ result is a pure function of that input, with no live binding and no evaluation 
 arbitrary Ruby. That is exactly the part that can — and should — live as a
 standalone Go library, separate from the interpreter.
 
-## Extracted from rbgo, reusable by anyone
+## Extracted from rbgo, reusable by anyone {#extracted-from-rbgo-reusable-by-anyone}
 
 This library began life inside [go-embedded-ruby](https://github.com/go-embedded-ruby/ruby)'s
 `rbgo`. It has been **extracted into a reusable standalone library** so that:
@@ -21,7 +26,7 @@ This library began life inside [go-embedded-ruby](https://github.com/go-embedded
 - the behaviour is pinned by a **differential oracle** against the system
   `ruby`, independent of any one consumer.
 
-## What it is — and isn't
+## What it is — and isn't {#what-it-is-and-isnt}
 
 The number theory behind `Prime` — sieving the primes, testing primality,
 factorising an integer — is fully deterministic and needs **no interpreter**, so
@@ -31,7 +36,7 @@ enumerator, `Integer#prime?`) is the host's job; this library hands back
 through `*big.Int`, so a host can map its own `Integer` to and from this package
 without precision loss.
 
-## Exact, not probabilistic
+## Exact, not probabilistic {#exact-not-probabilistic}
 
 Primality is exact over the range Ruby programs use. Small inputs are settled by
 **trial division**; larger inputs use **Baillie–PSW** — a strong base-2
@@ -41,7 +46,7 @@ result is exact across the entire 64-bit range and a sound probable-prime test
 beyond it. Factorisation strips small primes, then splits the cofactor with
 **Pollard's rho** (Brent's variant), recursing to proven primes.
 
-## Why pure Go matters here
+## Why pure Go matters here {#why-pure-go-matters-here}
 
 Because the library is CGO-free and depends only on `math/big`, it:
 
@@ -52,5 +57,5 @@ Because the library is CGO-free and depends only on `math/big`, it:
   `PATH`, while the cross-arch lanes (where `ruby` is absent) still validate the
   library itself.
 
-See [Usage & API](api.md) for the surface and [Roadmap](roadmap.md) for what is
+See [Usage & API]({{< relref "api.md" >}}) for the surface and [Roadmap]({{< relref "roadmap.md" >}}) for what is
 in scope.

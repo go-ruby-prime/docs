@@ -1,18 +1,26 @@
-# Usage & API
+---
+title: "Usage & API"
+weight: 30
+---
+
+# Usage & API {#usage-api}
 
 The public API lives at the module root (`github.com/go-ruby-prime/prime`). It is **Ruby-shaped but Go-idiomatic**: `Take` / `IsPrime` / `PrimeDivision` mirror `Prime.take` / `Prime.prime?` / `Prime.prime_division`, while the surface follows Go conventions — explicit `*big.Int` values, no global state.
 
-!!! success "Status: implemented"
-    The library is built and importable as `github.com/go-ruby-prime/prime`, bound into
-    `rbgo` as a native module; see [Roadmap](roadmap.md).
+{{< callout type="info" >}}
+**Status: implemented**
 
-## Install
+The library is built and importable as `github.com/go-ruby-prime/prime`, bound into
+`rbgo` as a native module; see [Roadmap]({{< relref "roadmap.md" >}}).
+{{< /callout >}}
+
+## Install {#install}
 
 ```sh
 go get github.com/go-ruby-prime/prime
 ```
 
-## Worked example
+## Worked example {#worked-example}
 
 ```go
 package main
@@ -41,7 +49,7 @@ func main() {
 }
 ```
 
-## Shape
+## Shape {#shape}
 
 ```go
 // IsPrime reports whether n is prime (Prime.prime? / Integer#prime?).
@@ -77,7 +85,7 @@ func Prev(n *big.Int) *big.Int
 type ZeroError struct{} // mirrors Ruby's ZeroDivisionError
 ```
 
-## Ruby ↔ Go value model
+## Ruby ↔ Go value model {#ruby-go-value-model}
 
 Every integer flows through `*big.Int`, so a host can map its own `Integer` to and
 from this package without precision loss.
@@ -92,7 +100,7 @@ from this package without precision loss.
 | `Prime.int_from_prime_division(ps)`  | `Int(ps)`                     |
 | `ZeroDivisionError`                  | `ZeroError` (panic)           |
 
-## Algorithm
+## Algorithm {#algorithm}
 
 Primality is exact, not probabilistic, over the range Ruby programs use:
 
@@ -105,7 +113,7 @@ Primality is exact, not probabilistic, over the range Ruby programs use:
 - **Factorisation** strips small primes, then splits the cofactor with **Pollard's
   rho** (Brent's variant), recursing to proven primes.
 
-## MRI conformance
+## MRI conformance {#mri-conformance}
 
 Correctness is defined by reference Ruby. A **differential oracle** runs a corpus
 through both the system `ruby` (`Prime.prime?`, `Prime.take`,
@@ -114,7 +122,7 @@ approximated from memory. The oracle tests skip themselves where `ruby` is not o
 `PATH` (e.g. the qemu arch lanes), so the cross-arch builds still validate the
 library.
 
-## Relationship to Ruby
+## Relationship to Ruby {#relationship-to-ruby}
 
 `go-ruby-prime/prime` is **standalone and reusable**, and is the `prime` backend
 bound into [go-embedded-ruby](https://github.com/go-embedded-ruby/ruby) by `rbgo`
