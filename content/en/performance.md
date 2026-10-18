@@ -1,4 +1,9 @@
-# Performance
+---
+title: "Performance"
+weight: 50
+---
+
+# Performance {#performance}
 
 `go-ruby-prime/prime` is the pure-Go library that
 [`rbgo`](https://github.com/go-embedded-ruby/ruby) binds for Ruby's `prime`. This
@@ -6,7 +11,7 @@ page describes the **comparative benchmark methodology** used to measure that
 module against the reference Ruby runtimes, part of the ecosystem-wide per-module
 parity suite.
 
-## What is measured
+## What is measured {#what-is-measured}
 
 The **same** Ruby script — a representative mix of `Prime.prime?`, `Prime.take`
 and `Prime.prime_division` calls — is run under every runtime. `rbgo`'s number
@@ -26,7 +31,7 @@ timing.
 - The benchmark script and harness live in rbgo's repo under
   [`bench/modules/`](https://github.com/go-embedded-ruby/ruby/tree/main/bench/modules).
 
-## Result (best of 5, ms)
+## Result (best of 5, ms) {#result-best-of-5-ms}
 
 | Runtime | time | vs MRI |
 | --- | ---: | ---: |
@@ -38,16 +43,19 @@ timing.
 
 rbgo runs on **go-ruby-prime** at near parity with MRI (1.67x) and **matches MRI+YJIT** (1.00x) on this enumerate+factorise loop. At ~50 ms the row carries relative noise; treat the ratio as order-of-magnitude.
 
-!!! note "Honest framing"
-    JRuby and TruffleRuby are timed **cold, single-shot**, so they carry JVM /
-    Graal startup on every run — read them as one-shot `ruby file.rb` costs, the
-    same way `rbgo` and MRI are measured, not as steady-state JIT numbers. Rows
-    that complete in well under ~200 ms carry the most relative noise; treat
-    their ratios as order-of-magnitude. These are **real measured numbers** from
-    the 2026-06-30 run (Apple M-series; `ruby 4.0.5 +PRISM`, `jruby 10.1.0.0`,
-    `truffleruby 34.0.1`) — nothing is fabricated or cherry-picked.
+{{< callout type="info" >}}
+**Honest framing**
 
-## Library-level benchmark (Go API vs runtimes) — 2026-07-03
+JRuby and TruffleRuby are timed **cold, single-shot**, so they carry JVM /
+Graal startup on every run — read them as one-shot `ruby file.rb` costs, the
+same way `rbgo` and MRI are measured, not as steady-state JIT numbers. Rows
+that complete in well under ~200 ms carry the most relative noise; treat
+their ratios as order-of-magnitude. These are **real measured numbers** from
+the 2026-06-30 run (Apple M-series; `ruby 4.0.5 +PRISM`, `jruby 10.1.0.0`,
+`truffleruby 34.0.1`) — nothing is fabricated or cherry-picked.
+{{< /callout >}}
+
+## Library-level benchmark (Go API vs runtimes) — 2026-07-03 {#library-level-benchmark-go-api-vs-runtimes-2026-07-03}
 
 This section measures the **pure-Go library directly, through its Go API** — not
 the `rbgo` interpreter path recorded above. It isolates the library primitive
@@ -66,23 +74,26 @@ MRI before any timing.
   Interpreter start-up is outside the timed region, so these are operation costs,
   not `ruby file.rb` process costs.
 
-!!! success "Optimized 2026-07-03 — now beats MRI + YJIT on every workload"
-    The `uint64` fast path has been squeezed so `Prime.prime?` beats not just plain
-    MRI but **MRI + YJIT**, which JITs MRI's `prime?` loop. Two changes do it: the
-    per-step modular multiply now uses a **plain `uint64` multiply below `2^32`**
-    (the product of two residues fits in a word — no 128-bit `Div64`) and
-    **Montgomery multiplication for the full range** (REDC replaces the per-step
-    64-bit division with a multiply, add and shift); and the deterministic
-    Miller–Rabin uses **smaller proven witness sets** per magnitude (`{2,7,61}`
-    below `4,759,123,141`, Jaeschke 1993 — 3 rounds instead of 4 for the 30-bit
-    input) behind a trial-division prefilter trimmed to the primes `≤ 37`. Results
-    are identical to the previous path across the whole `uint64` domain; only the
-    cost changed. A **segmented sieve of Eratosthenes** still memoizes the
-    generator (`Prime.each`/`first`/`take`), and `math/big` Baillie–PSW is retained
-    unchanged for values above `2^64`. The numbers below are re-measured against
-    these paths.
+{{< callout type="info" >}}
+**Optimized 2026-07-03 — now beats MRI + YJIT on every workload**
 
-#### first-1000
+The `uint64` fast path has been squeezed so `Prime.prime?` beats not just plain
+MRI but **MRI + YJIT**, which JITs MRI's `prime?` loop. Two changes do it: the
+per-step modular multiply now uses a **plain `uint64` multiply below `2^32`**
+(the product of two residues fits in a word — no 128-bit `Div64`) and
+**Montgomery multiplication for the full range** (REDC replaces the per-step
+64-bit division with a multiply, add and shift); and the deterministic
+Miller–Rabin uses **smaller proven witness sets** per magnitude (`{2,7,61}`
+below `4,759,123,141`, Jaeschke 1993 — 3 rounds instead of 4 for the 30-bit
+input) behind a trial-division prefilter trimmed to the primes `≤ 37`. Results
+are identical to the previous path across the whole `uint64` domain; only the
+cost changed. A **segmented sieve of Eratosthenes** still memoizes the
+generator (`Prime.each`/`first`/`take`), and `math/big` Baillie–PSW is retained
+unchanged for values above `2^64`. The numbers below are re-measured against
+these paths.
+{{< /callout >}}
+
+#### first-1000 {#first-1000}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -92,7 +103,7 @@ MRI before any timing.
 | JRuby | 45833.4 | 0.68× |
 | TruffleRuby | 71583.4 | 1.07× |
 
-#### isprime-982451653
+#### isprime-982451653 {#isprime-982451653}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -102,7 +113,7 @@ MRI before any timing.
 | JRuby | 1599.8 | 1.58× |
 | TruffleRuby | 443.4 | 0.44× |
 
-#### isprime-composite
+#### isprime-composite {#isprime-composite}
 
 | Runtime | ns/op | vs MRI |
 | --- | ---: | ---: |
@@ -128,21 +139,27 @@ large integers (`n ≥ 2^64`), where it stays exact through the 64-bit range and
 correct probable-prime test beyond it. The earlier ~10× and ~52× rows were
 measured against the pre-optimization library; they are superseded here.
 
-!!! note "Reproduce"
-    The harness is committed under
-    [`benchmarks/`](https://github.com/go-ruby-prime/docs/tree/main/benchmarks):
-    a self-contained Go driver (`go/`, pins the published library via
-    `go.mod`), the equivalent `ruby/prime.rb` workload, and `run.sh`. Run
-    `bash benchmarks/run.sh`; env `OUTER`/`WARM` tune the pass budget and
-    `RUBY`/`JRUBY`/`TRUFFLERUBY` select the runtime binaries.
+{{< callout type="info" >}}
+**Reproduce**
 
-!!! warning "Warm-up budget & noise — honest framing"
-    Numbers reflect a **fixed warm-process budget** (5 warm-up + 50 timed passes
-    in one process). The JVM/GraalVM JITs (JRuby, TruffleRuby) may need a larger
-    warm-up to reach steady state, so their columns can **understate** peak
-    throughput — most visibly TruffleRuby on the shortest loops (a few cold-JIT
-    outliers are noted in the text). Sub-microsecond rows carry the most relative
-    noise; treat those ratios as order-of-magnitude. Every number here is a
-    **real measured value** from the dated run above — nothing is fabricated,
-    estimated, or cherry-picked. The go-ruby column is the pure-Go library; every
-    other column is that interpreter's own stdlib doing the equivalent work.
+The harness is committed under
+[`benchmarks/`](https://github.com/go-ruby-prime/docs/tree/main/benchmarks):
+a self-contained Go driver (`go/`, pins the published library via
+`go.mod`), the equivalent `ruby/prime.rb` workload, and `run.sh`. Run
+`bash benchmarks/run.sh`; env `OUTER`/`WARM` tune the pass budget and
+`RUBY`/`JRUBY`/`TRUFFLERUBY` select the runtime binaries.
+{{< /callout >}}
+
+{{< callout type="warning" >}}
+**Warm-up budget & noise — honest framing**
+
+Numbers reflect a **fixed warm-process budget** (5 warm-up + 50 timed passes
+in one process). The JVM/GraalVM JITs (JRuby, TruffleRuby) may need a larger
+warm-up to reach steady state, so their columns can **understate** peak
+throughput — most visibly TruffleRuby on the shortest loops (a few cold-JIT
+outliers are noted in the text). Sub-microsecond rows carry the most relative
+noise; treat those ratios as order-of-magnitude. Every number here is a
+**real measured value** from the dated run above — nothing is fabricated,
+estimated, or cherry-picked. The go-ruby column is the pure-Go library; every
+other column is that interpreter's own stdlib doing the equivalent work.
+{{< /callout >}}

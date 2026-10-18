@@ -1,4 +1,9 @@
-# go-ruby-prime documentation
+---
+title: "Home"
+weight: 10
+---
+
+# go-ruby-prime documentation {#go-ruby-prime-documentation}
 
 **Ruby's `Prime` generation, primality testing and factorisation in pure Go — MRI-compatible, no cgo.**
 
@@ -24,10 +29,13 @@ by `rbgo` as a native module — just like
 [go-ruby-marshal](https://github.com/go-ruby-marshal). The dependency runs the
 other way: this library has **no dependency on the Ruby runtime**.
 
-!!! success "Status: complete — MRI byte-exact"
-    Faithful port of Ruby's `prime`: the **generator** (`Take` / `First` / `Each` / `EachPrime`), exact **primality** (`IsPrime`, rejecting every Carmichael number and strong pseudoprime), **factorisation** (`PrimeDivision`, with a leading `[-1, 1]` for negatives and a `ZeroError` panic for 0), **reconstruction** (`Int`), and the **cursor** (`Next` / `Prev`). Validated by a **differential oracle** against the system `ruby` / `Prime` at 100% coverage, `gofmt` + `go vet` clean, CI green across the six 64-bit Go targets.
+{{< callout type="info" >}}
+**Status: complete — MRI byte-exact**
 
-## Quick taste
+Faithful port of Ruby's `prime`: the **generator** (`Take` / `First` / `Each` / `EachPrime`), exact **primality** (`IsPrime`, rejecting every Carmichael number and strong pseudoprime), **factorisation** (`PrimeDivision`, with a leading `[-1, 1]` for negatives and a `ZeroError` panic for 0), **reconstruction** (`Int`), and the **cursor** (`Next` / `Prev`). Validated by a **differential oracle** against the system `ruby` / `Prime` at 100% coverage, `gofmt` + `go vet` clean, CI green across the six 64-bit Go targets.
+{{< /callout >}}
+
+## Quick taste {#quick-taste}
 
 ```go
 fmt.Println(prime.Take(5))                        // [2 3 5 7 11]   (Prime.take 5)
@@ -38,7 +46,7 @@ n := prime.Int(prime.PrimeDivision(big.NewInt(360)))
 fmt.Println(n)                                    // 360
 ```
 
-## Repositories
+## Repositories {#repositories}
 
 | Repo | What it is |
 | --- | --- |
@@ -47,7 +55,7 @@ fmt.Println(n)                                    // 360
 | [`go-ruby-prime.github.io`](https://github.com/go-ruby-prime/go-ruby-prime.github.io) | the organization landing page (Hugo) |
 | [`brand`](https://github.com/go-ruby-prime/brand) | logo and brand assets |
 
-## Principles
+## Principles {#principles}
 
 - **Pure Go, `CGO_ENABLED=0`** — trivial cross-compilation, a single static
   binary, no C toolchain; the only dependency is `math/big`.
@@ -58,11 +66,11 @@ fmt.Println(n)                                    // 360
   the Ruby runtime — the dependency runs the other way.
 - **100% test coverage** is the target, enforced as a CI gate, across 6 arches.
 
-## Where to go next
+## Where to go next {#where-to-go-next}
 
-- [Why pure Go](why.md) — why prime number theory is deterministic enough to live
+- [Why pure Go]({{< relref "why.md" >}}) — why prime number theory is deterministic enough to live
   as a standalone, interpreter-independent Go library.
-- [Usage & API](api.md) — the public surface and worked examples.
-- [Roadmap](roadmap.md) — what is done and what is downstream by design.
+- [Usage & API]({{< relref "api.md" >}}) — the public surface and worked examples.
+- [Roadmap]({{< relref "roadmap.md" >}}) — what is done and what is downstream by design.
 
 Source lives at [github.com/go-ruby-prime/prime](https://github.com/go-ruby-prime/prime).

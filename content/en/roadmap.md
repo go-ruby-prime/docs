@@ -1,4 +1,9 @@
-# Roadmap
+---
+title: "Roadmap"
+weight: 40
+---
+
+# Roadmap {#roadmap}
 
 `go-ruby-prime/prime` is grown **test-first**, each capability differential-tested against MRI
 rather than built in isolation. Ruby's `Prime` — the deterministic,
@@ -14,7 +19,7 @@ interpreter-independent number-theory core extracted from rbgo's internals — i
 | Cursor | `Next(n)` / `Prev(n)` step to the adjacent prime. | **Done** |
 | Differential oracle & coverage | Deterministic golden tables plus a differential oracle: a corpus computed both here and by the system `ruby` (`Prime.prime?`, `Prime.take`, `Prime.prime_division`, …) and compared; 100% coverage, gofmt + go vet clean, green across all six 64-bit Go arches. | **Done** |
 
-## Documented out-of-scope boundaries
+## Documented out-of-scope boundaries {#documented-out-of-scope-boundaries}
 
 These are **deliberate**, recorded so the module's surface is unambiguous:
 
@@ -28,5 +33,5 @@ These are **deliberate**, recorded so the module's surface is unambiguous:
 - **Standalone & reusable.** The module has no dependency on the Ruby runtime;
   the dependency runs the other way.
 
-See [Usage & API](api.md) for the surface and [Why pure Go](why.md) for the
+See [Usage & API]({{< relref "api.md" >}}) for the surface and [Why pure Go]({{< relref "why.md" >}}) for the
 deterministic/interpreter split.
